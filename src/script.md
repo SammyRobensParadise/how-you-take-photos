@@ -11,18 +11,6 @@ First you will need:
 lets include all the depdencies. Before you begin, make sure you have installed the depencies.
 You can do this by running `Make install` which will install the dependencies in `requirements.text`. You can also manually install the dependencies listed below.
 
-# Edit This Section
-This following code block is the only thing you need to edit. It is the path to the directory where all of the photos you want to analyze are located. Be sure to make sure that you are providing a global path to the directory where all of the photos you want to analyze are located.
-
-
-```python
-# =================================================================
-#                      Edit this string
-file_path_to_images = '/Users/sammyrobens-paradise/Desktop/lights'
-# =================================================================
-
-```
-
 ## Install Dependencies
 
 
@@ -30,4 +18,26 @@ file_path_to_images = '/Users/sammyrobens-paradise/Desktop/lights'
 # install dependencies
 import numpy as np
 import matplotlib.pyplot as plt
+from PIL import Image
+from PIL.ExifTags import TAGS
+import os
 ```
+
+Input the file path to the folder containing the images you want to visualize
+
+
+```python
+path_to_image_dir = input("Enter the complete path to the image folder")
+print("Loading images from " + path_to_image_dir + "...")
+
+directory = os.fsencode(path_to_image_dir)
+
+images = os.listdir(directory)
+num_images = len(images)
+print(str(num_images) + " images found in " + path_to_image_dir)
+
+```
+
+    Loading images from /Users/sammyrobens-paradise/Desktop/lights...
+    163images found in /Users/sammyrobens-paradise/Desktop/lights
+
