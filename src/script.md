@@ -27,9 +27,9 @@ You can do this by running `Make install` which will install the dependencies in
 # install dependencies
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 from PIL import Image, ExifTags
 from PIL.ExifTags import TAGS
-from typing import TypedDict
 import glob
 import os
 ```
@@ -56,7 +56,7 @@ print(str(num_images) + " images found in " + path_to_image_dir)
 
 ```python
 # Define all our classes, types and helper functions
-class Exif(TypedDict):
+class Exif:
     ResolutionUnit: int
     ExifOffset: int
     Make: str
@@ -96,6 +96,8 @@ class Exif(TypedDict):
     LensModel: str
     LensSerialNumber: str
 
+def reject_outliers(data, m=2):
+    return data[abs(data - np.mean(data)) < m * np.std(data)]
 
 class ImageMetadata:
     def __init__(self, filepath: str):
@@ -107,6 +109,14 @@ class ImageMetadata:
             if k in ExifTags.TAGS
         }
 
+    def _get_focal_plane_x_resolution(self):
+        return self.exif["FocalPlaneXResolution"]
+
+    def _get_focal_plane_y_resolution(self):
+        return self.exif["FocalPlaneYResolution"]
+
+    def _get_shutter_speed_value(self):
+        return self.exif["ShutterSpeedValue"]
 ```
 
 ## Generate a `data` list
@@ -114,7 +124,7 @@ The list contains all of our images and their standard `exif` tagged metadata st
 
 
 ```python
-data = []
+data:list[ImageMetadata] = []
 for path in image_paths:
     curImage = ImageMetadata(path)
     data.append(curImage)
@@ -123,9 +133,49 @@ for path in image_paths:
 ## Now lets get into plotting some data...
 
 ### Resolutions
-lets plot the focal plane resolutions of the pictures that you take as $(x,y)$ coordinates
+lets plot the shutter speed of your photos
 
 
 ```python
+shutterSpeed = []
+for item in data:
+    shutterSpeed.append(item._get_shutter_speed_value())
+    # print(shutterSpeed[len(shutterSpeed) - 1])
 
+shutterSpeed = np.array(shutterSpeed, dtype=float)
+Tv = np.array(2 ** (-1 * shutterSpeed))
+Tv = reject_outliers(Tv)
+bins = int(np.rint(len(Tv) / 2))
+fig, axs = plt.subplots(1, 2, tight_layout=True)
+fig.suptitle("Shutter Speed")
+N, bins, patches = axs[0].hist(Tv, bins=bins)
+fracs = N / N.max()
+norm = mcolors.Normalize(fracs.min(), fracs.max())
+for thisfrac, thispatch in zip(fracs, patches):
+    color = plt.cm.viridis(norm(thisfrac))
+    thispatch.set_facecolor(color)
+axs[0].set_title("Histogram of Shutter Speed")
+axs[0].set_ylabel("Photos")
+fig
+axs[0].set_xlabel("$t$ Seconds")
+axs[1].boxplot(
+    Tv,
+    patch_artist=True,
+    showmeans=True,
+    showfliers=False,
+    medianprops={"color": "white", "linewidth": 0.5},
+    boxprops={"facecolor": "C0", "edgecolor": "white", "linewidth": 0.5},
+    whiskerprops={"color": "C0", "linewidth": 1.5},
+    capprops={"color": "C0", "linewidth": 1.5},
+)
+axs[1].set_title("Box Plot of Shutter Speed")
+axs[1].set_ylabel("$t$ seconds")
+axs[1].set_xlabel(" ")
+plt.show()
 ```
+
+
+    
+![png](script_files/script_12_0.png)
+    
+
