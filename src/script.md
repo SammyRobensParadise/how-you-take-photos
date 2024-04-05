@@ -96,8 +96,18 @@ class Exif:
     LensModel: str
     LensSerialNumber: str
 
+
 def reject_outliers(data, m=2):
     return data[abs(data - np.mean(data)) < m * np.std(data)]
+
+
+def shutter_speed_to_seconds(shutterSpeed):
+    return np.array(2 ** (-1 * shutterSpeed))
+
+
+def aperture_to_stops(aperture):
+    return np.array(np.round((np.power(2, aperture) ** 0.5), 1))
+
 
 class ImageMetadata:
     def __init__(self, filepath: str):
@@ -117,6 +127,9 @@ class ImageMetadata:
 
     def _get_shutter_speed_value(self):
         return self.exif["ShutterSpeedValue"]
+
+    def _get_aperture_speed_value(self):
+        return self.exif["ApertureValue"]
 ```
 
 ## Generate a `data` list
@@ -132,7 +145,8 @@ for path in image_paths:
 
 ## Now lets get into plotting some data...
 
-### Resolutions
+### Shutter Speed 
+
 lets plot the shutter speed of your photos
 
 
@@ -143,7 +157,7 @@ for item in data:
     # print(shutterSpeed[len(shutterSpeed) - 1])
 
 shutterSpeed = np.array(shutterSpeed, dtype=float)
-Tv = np.array(2 ** (-1 * shutterSpeed))
+Tv = shutter_speed_to_seconds(shutterSpeed)
 Tv = reject_outliers(Tv)
 bins = int(np.rint(len(Tv) / 2))
 fig, axs = plt.subplots(1, 2, tight_layout=True)
@@ -179,3 +193,19 @@ plt.show()
 ![png](script_files/script_12_0.png)
     
 
+
+What about shutter speed relative to Aperture?
+
+
+```python
+points = np.array(
+    [
+        [item._get_shutter_speed_value(), item._get_aperture_speed_value()]
+        for item in data
+    ],
+    dtype=float,
+)
+
+points[:, 0] = shutter_speed_to_seconds(points[:, 0])
+points[:, 1] = aperture_to_stops(points[:, 1])
+```
