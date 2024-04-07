@@ -50,7 +50,7 @@ print(str(num_images) + " images found in " + path_to_image_dir)
 ```
 
     Loading images from /Users/sammyrobens-paradise/Desktop/lights...
-    162 images found in /Users/sammyrobens-paradise/Desktop/lights
+    168 images found in /Users/sammyrobens-paradise/Desktop/lights
 
 
 
@@ -170,7 +170,6 @@ for thisfrac, thispatch in zip(fracs, patches):
     thispatch.set_facecolor(color)
 axs[0].set_title("Histogram of Shutter Speed")
 axs[0].set_ylabel("Photos")
-fig
 axs[0].set_xlabel("$t$ Seconds")
 axs[1].boxplot(
     Tv,
@@ -208,4 +207,22 @@ points = np.array(
 
 points[:, 0] = shutter_speed_to_seconds(points[:, 0])
 points[:, 1] = aperture_to_stops(points[:, 1])
+Tv = points[:, 0]
+Av = points[:, 1]
+
+assert len(Tv) == len(Av)
+plt.figure()
+plt.suptitle("Aperture Versus Shutter Speed")
+plt.scatter(Av, Tv, c=np.random.rand(len(points)))
+plt.ylim(0, 0.026)
+plt.xlabel("Aperture $f$ Number")
+plt.ylabel("Shutter Speed $t$ Seconds")
+
+plt.show()
 ```
+
+
+    
+![png](script_files/script_14_0.png)
+    
+
