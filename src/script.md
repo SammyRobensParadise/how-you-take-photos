@@ -299,3 +299,30 @@ plt.show()
 ![png](script_files/script_18_0.png)
     
 
+
+### What about ISO versus shutter speed?
+
+
+```python
+points = np.array(
+    [[item._get_shutter_speed_value(), item._get_ISO_speed_rating()] for item in data],
+    dtype=float,
+)
+points[:, 0] = shutter_speed_to_seconds(points[:, 0])
+Tv = points[:, 0]
+ISO = points[:, 1]
+assert len(Tv) == len(ISO)
+plt.figure()
+plt.suptitle("Aperture Versus ISO")
+plt.scatter(ISO, Tv, c=np.random.rand(len(points)))
+plt.ylim(0, 0.02)
+plt.xlabel("$ISO$ Speed Rating")
+plt.ylabel("Shutter Speed $t$ Seconds")
+plt.show()
+```
+
+
+    
+![png](script_files/script_20_0.png)
+    
+
