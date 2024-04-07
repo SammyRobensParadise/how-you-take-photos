@@ -199,7 +199,7 @@ plt.show()
     
 
 
-What about shutter speed relative to Aperture?
+### What about shutter speed relative to Aperture?
 
 
 ```python
@@ -233,7 +233,7 @@ plt.show()
     
 
 
-Whats the $f$ Number for your photos?
+### Whats the $f$ Number for your photos?
 
 
 ```python
@@ -273,7 +273,7 @@ plt.show()
     
 
 
-What about ISO?
+### What about ISO?
 
 
 ```python
