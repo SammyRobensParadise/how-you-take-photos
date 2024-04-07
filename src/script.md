@@ -130,6 +130,9 @@ class ImageMetadata:
 
     def _get_aperture_speed_value(self):
         return self.exif["ApertureValue"]
+    
+    def _get_f_number(self):
+        return self.exif["FNumber"]
 ```
 
 ## Generate a `data` list
@@ -224,5 +227,47 @@ plt.show()
 
     
 ![png](script_files/script_14_0.png)
+    
+
+
+Whats the $f$ Number for your photos?
+
+
+```python
+Fn = np.array([item._get_f_number() for item in data], dtype=float)
+Fn = reject_outliers(Fn)
+bins = len(np.unique(Fn))
+fig, axs = plt.subplots(1, 2, tight_layout=True)
+fig.suptitle("$f$ Number (F-Stop) is $\\frac{1}{f}$")
+N, bins, patches = axs[0].hist(Fn, bins=bins)
+fracs = N / N.max()
+norm = mcolors.Normalize(fracs.min(), fracs.max())
+for thisfrac, thispatch in zip(fracs, patches):
+    color = plt.cm.viridis(norm(thisfrac))
+    thispatch.set_facecolor(color)
+axs[0].set_title("Histogram of $f$ Number")
+axs[0].set_ylabel("Photos")
+axs[0].set_xlabel("$f$ Number")
+#axs[0].set_xticks([0])
+#axs[0].set_xticks(np.unique(Fn))
+axs[1].boxplot(
+    Fn,
+    patch_artist=True,
+    showmeans=True,
+    showfliers=False,
+    medianprops={"color": "white", "linewidth": 0.5},
+    boxprops={"facecolor": "C0", "edgecolor": "white", "linewidth": 0.5},
+    whiskerprops={"color": "C0", "linewidth": 1.5},
+    capprops={"color": "C0", "linewidth": 1.5},
+)
+axs[1].set_title("Box Plot of Shutter Speed")
+axs[1].set_ylabel("$f$ Number")
+axs[1].set_xlabel(" ")
+plt.show()
+```
+
+
+    
+![png](script_files/script_16_0.png)
     
 
