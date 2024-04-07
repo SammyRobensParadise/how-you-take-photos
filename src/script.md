@@ -130,9 +130,12 @@ class ImageMetadata:
 
     def _get_aperture_speed_value(self):
         return self.exif["ApertureValue"]
-    
+
     def _get_f_number(self):
         return self.exif["FNumber"]
+
+    def _get_ISO_speed_rating(self):
+        return self.exif["ISOSpeedRatings"]
 ```
 
 ## Generate a `data` list
@@ -248,8 +251,6 @@ for thisfrac, thispatch in zip(fracs, patches):
 axs[0].set_title("Histogram of $f$ Number")
 axs[0].set_ylabel("Photos")
 axs[0].set_xlabel("$f$ Number")
-#axs[0].set_xticks([0])
-#axs[0].set_xticks(np.unique(Fn))
 axs[1].boxplot(
     Fn,
     patch_artist=True,
@@ -269,5 +270,32 @@ plt.show()
 
     
 ![png](script_files/script_16_0.png)
+    
+
+
+What about ISO?
+
+
+```python
+ISO = np.array([item._get_ISO_speed_rating() for item in data], dtype=float)
+ISO = reject_outliers(ISO)
+bins = len(np.unique(ISO))
+plt.figure()
+N, bins, patches = plt.hist(ISO, bins=bins)
+fracs = N / N.max()
+norm = mcolors.Normalize(fracs.min(), fracs.max())
+for thisfrac, thispatch in zip(fracs, patches):
+    color = plt.cm.viridis(norm(thisfrac))
+    thispatch.set_facecolor(color)
+plt.title("Histogram of $ISO$ Speed Rating")
+plt.ylabel("Photos")
+plt.xlabel("$ISO$ Speed Rating")
+plt.xticks(np.unique(ISO))
+plt.show()
+```
+
+
+    
+![png](script_files/script_18_0.png)
     
 
