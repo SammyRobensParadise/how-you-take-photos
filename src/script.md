@@ -136,6 +136,9 @@ class ImageMetadata:
 
     def _get_ISO_speed_rating(self):
         return self.exif["ISOSpeedRatings"]
+
+    def _get_exposure_time(self):
+        return self.exif["ExposureTime"]
 ```
 
 ## Generate a `data` list
@@ -324,5 +327,29 @@ plt.show()
 
     
 ![png](script_files/script_20_0.png)
+    
+
+
+
+```python
+points = np.array(
+    [[item._get_ISO_speed_rating(), item._get_exposure_time()] for item in data],
+    dtype=float,
+)
+ISO = points[:, 0]
+Et = points[:, 1]
+assert len(Et) == len(ISO)
+plt.figure()
+plt.suptitle("Exposure Time Versus ISO")
+plt.scatter(ISO, Et, c=np.random.rand(len(points)))
+plt.ylim(0, 0.02)
+plt.xlabel("$ISO$ Speed Rating")
+plt.ylabel("Exposure Time (Seconds)")
+plt.show()
+```
+
+
+    
+![png](script_files/script_21_0.png)
     
 
